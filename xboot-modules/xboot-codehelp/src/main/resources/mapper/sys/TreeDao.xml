@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xiaomu.code.modules.sys.dao.TreeDao">
+
+
+    <select id="getChildTree" parameterType="java.lang.Integer" resultType="com.xiaomu.code.modules.sys.model.dto.Tree">
+        SELECT * FROM tree WHERE node_path REGEXP concat('/',#{id},'/[0-9]+') order by node_path asc
+    </select>
+
+    <delete id="deleteChild" parameterType="java.lang.Integer">
+        delete FROM tree WHERE node_path REGEXP concat('/',#{id},'/[0-9]+')
+    </delete>
+
+    <insert id="addParent" parameterType="com.xiaomu.code.modules.sys.model.vo.ParentTreeAddVo">
+        insert into tree(node_group_id,node_path,node_name,tree_type)
+        values
+        (#{nodeGroupId},
+        (select concat('/',auto_increment) from information_schema.tables where table_schema ='codehelp' and table_name='tree'),
+        #{nodeName},
+        #{treeType})
+    </insert>
+
+    <insert id="addChild" parameterType="com.xiaomu.code.modules.sys.model.vo.ChildTreeAddVo">
+        insert into tree(node_group_id,node_path,node_name,tree_type,busin_id)
+        select
+            p.node_group_id,
+            (select concat(p.node_path,'/',auto_increment) from information_schema.tables where table_schema ='codehelp' and table_name='tree'),
+            #{nodeName},
+            p.tree_type,
+            #{businId}
+        from tree p where p.id=#{parentId}
+    </insert>
+
+
+
+</mapper>
