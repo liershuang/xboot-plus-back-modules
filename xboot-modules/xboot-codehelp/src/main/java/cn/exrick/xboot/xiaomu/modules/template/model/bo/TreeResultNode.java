@@ -1,9 +1,9 @@
 /**
- * Copyright (C), 2019, 小木
- * FileName: ResultNode
+ * Copyright (C), 2020, 小木
+ * FileName: TreeResultNode
  * Author:   xiaomu
- * Date:     2019/12/20 13:20
- * Description: 解析后文件目录节点
+ * Date:     2020/4/2 11:17
+ * Description: 树形结构节点
  * History:
  */
 package cn.exrick.xboot.xiaomu.modules.template.model.bo;
@@ -11,9 +11,11 @@ package cn.exrick.xboot.xiaomu.modules.template.model.bo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
-public class ResultNode {
+public class TreeResultNode {
 
     /** 节点id */
     private int nodeId;
@@ -25,6 +27,6 @@ public class ResultNode {
     private String nodePath;
     /** 是否为文件，默认false */
     private boolean isFile = false;
-
-
+    /** 子节点 */
+    private List<TreeResultNode> childList;
 }

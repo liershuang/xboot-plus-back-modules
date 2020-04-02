@@ -33,6 +33,8 @@ import java.util.*;
 @Service
 public class CodeBuildServiceImpl implements CodeBuildService {
 
+    private static final String CODE_DEFAULT_PATH = "/code";
+
     @Autowired
     private TemplateGroupService templateGroupService;
     @Autowired
@@ -69,18 +71,16 @@ public class CodeBuildServiceImpl implements CodeBuildService {
 
         List<ResultNode> processedTemplateList = processTemplate(buildModel);
         for(ResultNode resultNode : processedTemplateList){
-            tempFileList.add(FileUtil.writeUtf8String(resultNode.getContent(), "/code"+resultNode.getNodePath()));
+            tempFileList.add(FileUtil.writeUtf8String(resultNode.getContent(), CODE_DEFAULT_PATH+resultNode.getNodePath()));
         }
 
-//        LocalFileUtil.downloadMultiFile(tempFileList, "codehelp.zip", httpServletResponse);
-//        LocalFileUtil.downloadZipFile("/code", "codehelp.zip", httpServletResponse);
-        LocalFileUtil.download("/code", httpServletResponse);
+        LocalFileUtil.download(CODE_DEFAULT_PATH, httpServletResponse);
     }
 
 
 
     /**
-     * 获取渲染后的文件列表
+     * 获取单个模板渲染后的文件列表
      * @param nodeTemplate
      * @param templateData
      * @param currentPath
@@ -95,12 +95,12 @@ public class CodeBuildServiceImpl implements CodeBuildService {
 
         List<NodeTemplate> nodeChildList = nodeTemplate.getChildList();
 
-        //模板名包含表名则表示要按照多个表数据循环解析
-        if(nodeTemplate.getNodeName().contains(Fields.TEMPLATE_FIELD.TABLE)){
-            //无子节点且businId不为空表示节点为文件
-            if(CollectionUtils.isEmpty(nodeChildList) && nodeTemplate.getBusinId() != null){
+        //无子节点且businId不为空表示节点为文件
+        if(CollectionUtils.isEmpty(nodeChildList) && nodeTemplate.getBusinId() != null){
+            //模板名包含表名则表示要按照多个表数据循环解析
+            if(nodeTemplate.getNodeName().contains(Fields.TEMPLATE_FIELD.TABLE)){
                 for(TableConfig tableConfig : tableConfigList){
-                    templateData.put(Fields.TEMPLATE_FIELD.TABLE, getTableConfig(tableConfig));
+                    templateData.put(Fields.TEMPLATE_FIELD.TABLE, getTableFields(tableConfig));
 
                     ResultNode resultNode = new ResultNode();
                     resultNode.setNodeId(nodeTemplate.getNodeId());
@@ -111,14 +111,6 @@ public class CodeBuildServiceImpl implements CodeBuildService {
                     resultNodeList.add(resultNode);
                 }
             }else{
-                //为目录，继续遍历
-                for(NodeTemplate childNodeTemplate : nodeChildList){
-                    getResultNodeList(childNodeTemplate, templateData, FreemarkerUtil.process(currentPath, templateData), tableConfigList, resultNodeList);
-                }
-            }
-        }else{
-            //无子节点且businId不为空表示节点为文件
-            if(CollectionUtils.isEmpty(nodeChildList) && nodeTemplate.getBusinId() != null){
                 ResultNode resultNode = new ResultNode();
                 resultNode.setNodeId(nodeTemplate.getNodeId());
                 resultNode.setNodeName(nodeTemplate.getNodeName());
@@ -126,11 +118,11 @@ public class CodeBuildServiceImpl implements CodeBuildService {
                 resultNode.setNodePath(FreemarkerUtil.process(currentPath, templateData));
                 resultNode.setContent(FreemarkerUtil.process(nodeTemplate.getContent(), templateData));
                 resultNodeList.add(resultNode);
-            }else{
-                //为目录，继续遍历
-                for(NodeTemplate childNodeTemplate : nodeChildList){
-                    getResultNodeList(childNodeTemplate, templateData, FreemarkerUtil.process(currentPath, templateData), tableConfigList, resultNodeList);
-                }
+            }
+        }else{
+            //为目录，继续遍历
+            for(NodeTemplate childNodeTemplate : nodeChildList){
+                getResultNodeList(childNodeTemplate, templateData, FreemarkerUtil.process(currentPath, templateData), tableConfigList, resultNodeList);
             }
         }
     }
@@ -141,16 +133,16 @@ public class CodeBuildServiceImpl implements CodeBuildService {
 
 
     /*************************************** 设置解析的字段名，方便统一修改 ******************************************************/
-    public Map<String, Object> getTableConfig(TableConfig tableConfig){
+    public Map<String, Object> getTableFields(TableConfig tableConfig){
         Map<String, Object> tableMap = new HashMap<>();
-        tableMap.put("_table_name", tableConfig.getTableName());
-        tableMap.put("_table_desc", tableConfig.getDescription());
+        tableMap.put(Fields.TEMPLATE_FIELD.TABLE_NAME, tableConfig.getTableName());
+        tableMap.put(Fields.TEMPLATE_FIELD.TABLE_DESC, tableConfig.getDescription());
 
-        tableMap.putAll(getColumnConfig(tableConfig.getId()));
+        tableMap.putAll(getColumnFields(tableConfig.getId()));
         return tableMap;
     }
 
-    public Map<String, Object> getColumnConfig(Integer tableId){
+    public Map<String, Object> getColumnFields(Integer tableId){
         List<ColumnConfig> columnList = columnConfigService.getColumnByTableId(tableId);
 
         Map<String, Object> columnData = new HashMap<>();
@@ -160,16 +152,16 @@ public class CodeBuildServiceImpl implements CodeBuildService {
         List<String> keyList = new ArrayList<>();
         for(ColumnConfig columnConfig : columnList){
             Map<String, Object> columnMap = new HashMap<>();;
-            columnMap.put("_column_name", columnConfig.getColumnName());
-            columnMap.put("_column_type", columnConfig.getColumnType());
-            columnMap.put("_column_length", columnConfig.getColumnLength());
-            columnMap.put("_column_desc", columnConfig.getDescription());
-            columnMap.put("_is_key", columnConfig.isKey());
+            columnMap.put(Fields.TEMPLATE_FIELD.COLUMN_NAME, columnConfig.getColumnName());
+            columnMap.put(Fields.TEMPLATE_FIELD.COLUMN_TYPE, columnConfig.getColumnType());
+            columnMap.put(Fields.TEMPLATE_FIELD.COLUMN_LENGTH, columnConfig.getColumnLength());
+            columnMap.put(Fields.TEMPLATE_FIELD.COLUMN_DESC, columnConfig.getDescription());
+            columnMap.put(Fields.TEMPLATE_FIELD.IS_KEY, columnConfig.isKey());
             if(columnConfig.isKey()) keyList.add(columnConfig.getColumnName());
             columnDataList.add(columnMap);
         }
-        columnData.put("_keyList", keyList);
-        columnData.put("_columnList", columnDataList);
+        columnData.put(Fields.TEMPLATE_FIELD.KEY_LIST, keyList);
+        columnData.put(Fields.TEMPLATE_FIELD.COLUMN_LIST, columnDataList);
         return columnData;
     }
 

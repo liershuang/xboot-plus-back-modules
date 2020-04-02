@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.xiaomu.code.modules.sys.dao.TreeDao">
+<mapper namespace="cn.exrick.xboot.xiaomu.modules.sys.dao.TreeDao">
 
 
-    <select id="getChildTree" parameterType="java.lang.Integer" resultType="com.xiaomu.code.modules.sys.model.dto.Tree">
+    <select id="getChildTree" parameterType="java.lang.Integer" resultType="cn.exrick.xboot.xiaomu.modules.sys.model.dto.Tree">
         SELECT * FROM tree WHERE node_path REGEXP concat('/',#{id},'/[0-9]+') order by node_path asc
     </select>
 
@@ -12,7 +12,7 @@
         delete FROM tree WHERE node_path REGEXP concat('/',#{id},'/[0-9]+')
     </delete>
 
-    <insert id="addParent" parameterType="com.xiaomu.code.modules.sys.model.vo.ParentTreeAddVo">
+    <insert id="addParent" parameterType="cn.exrick.xboot.xiaomu.modules.sys.model.vo.ParentTreeAddVo">
         insert into tree(node_group_id,node_path,node_name,tree_type)
         values
         (#{nodeGroupId},
@@ -21,7 +21,7 @@
         #{treeType})
     </insert>
 
-    <insert id="addChild" parameterType="com.xiaomu.code.modules.sys.model.vo.ChildTreeAddVo">
+    <insert id="addChild" parameterType="cn.exrick.xboot.xiaomu.modules.sys.model.vo.ChildTreeAddVo">
         insert into tree(node_group_id,node_path,node_name,tree_type,busin_id)
         select
             p.node_group_id,

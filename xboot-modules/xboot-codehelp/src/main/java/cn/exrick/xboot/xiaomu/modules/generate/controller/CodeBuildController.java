@@ -33,6 +33,12 @@ public class CodeBuildController {
         return Result.ok().put("processedTemplateList", processedTemplateList);
     }
 
+    /**
+     * 下载解析后模板组
+     * @param buildModel
+     * @param httpServletResponse
+     * @return
+     */
     @RequestMapping("generate")
     public Result generate(BuildModel buildModel, HttpServletResponse httpServletResponse){
         codeBuildService.generate(buildModel, httpServletResponse);

@@ -257,7 +257,7 @@ swagger:
 
 # Mybatis-plus
 mybatis-plus:
-  mapper-locations: classpath*:mapper/*.xml
+  mapper-locations: classpath*:/mapper/**/*.xml
 
 # 日志
 logging:

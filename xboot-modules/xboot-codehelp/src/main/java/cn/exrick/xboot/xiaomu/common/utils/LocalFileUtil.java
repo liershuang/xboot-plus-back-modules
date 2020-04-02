@@ -41,11 +41,7 @@ public class LocalFileUtil {
         } catch (Exception e) {
             log.error("下载异常", e);
         } finally {
-            FileUtil.del(srcPath);
-//            FileUtil.del(file);
-            file.delete();
             try {
-
                 if (os != null) {
                     os.flush();
                     os.close();
@@ -57,6 +53,8 @@ public class LocalFileUtil {
             } catch (IOException e) {
                 log.error("关闭异常", e);
             }
+            FileUtil.del(srcPath);
+            file.delete();
         }
     }
 
