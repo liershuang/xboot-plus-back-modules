@@ -78,7 +78,7 @@ public class TemplateGroupController {
 
     @RequestMapping("getTemplateGroupTree")
     public Result getCodeTree(Integer nodeGroupId){
-        List<NodeTemplate> treeTemplateList = templateGroupService.getTreeTemplatList(nodeGroupId);
+        List<NodeTemplate> treeTemplateList = templateGroupService.getTreeTemplateList(nodeGroupId);
 
         return Result.ok().put("treeTemplateList", treeTemplateList);
     }

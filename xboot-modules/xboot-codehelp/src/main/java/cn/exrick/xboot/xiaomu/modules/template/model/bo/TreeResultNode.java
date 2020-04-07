@@ -22,7 +22,9 @@ public class TreeResultNode {
     /** 节点名称 */
     private String nodeName;
     /** 模板内容 */
-    private String content;
+//    private String content;//树形结构不要文件内容
+    /** 节点解析后真实路径 */
+    private String nodeRealPath;
     /** 节点路径 */
     private String nodePath;
     /** 是否为文件，默认false */

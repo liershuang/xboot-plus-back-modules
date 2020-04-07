@@ -44,7 +44,7 @@ public class TemplateGroupServiceImpl extends ServiceImpl<TemplateGroupDao, Temp
     }
 
     @Override
-    public List<NodeTemplate> getTreeTemplatList(int groupId){
+    public List<NodeTemplate> getTreeTemplateList(int groupId){
         List<NodeTemplate> nodeTemplateList = new ArrayList();
 
         List<Template> templateList = getGroupTemplate(groupId);
@@ -52,6 +52,21 @@ public class TemplateGroupServiceImpl extends ServiceImpl<TemplateGroupDao, Temp
         for(Template template : templateList){
             templateMap.put(template.getId(), template);
         }
+
+        List<TreeBo> treeBoList = treeService.getTree(groupId);
+        for(TreeBo treeBo : treeBoList){
+            NodeTemplate nodeTemplate = new NodeTemplate();
+            setTreeTemplate(treeBo, nodeTemplate, templateMap);
+            nodeTemplateList.add(nodeTemplate);
+        }
+
+        return nodeTemplateList;
+    }
+
+    @Override
+    public List<NodeTemplate> getTreeTemplateListWithoutContent(int groupId){
+        List<NodeTemplate> nodeTemplateList = new ArrayList();
+        Map<Integer, Template> templateMap = new HashMap<>();
 
         List<TreeBo> treeBoList = treeService.getTree(groupId);
         for(TreeBo treeBo : treeBoList){
@@ -76,8 +91,10 @@ public class TemplateGroupServiceImpl extends ServiceImpl<TemplateGroupDao, Temp
         nodeTemplate.setNodeId(treeBo.getId());
         nodeTemplate.setBusinId(treeBo.getBusinId());
         nodeTemplate.setNodeName(treeBo.getNodeName());
-        if(templateMap.get(treeBo.getBusinId()) != null)
+        nodeTemplate.setNodePath(treeBo.getNodePath());
+        if(templateMap.get(treeBo.getBusinId()) != null) {
             nodeTemplate.setContent(templateMap.get(treeBo.getBusinId()).getContent());
+        }
 
         List<TreeBo> treeChildList = treeBo.getChildList();
         if(!CollectionUtils.isEmpty(treeChildList)){

@@ -22,7 +22,7 @@ public class LocalFileUtil {
     private static Logger log = LoggerFactory.getLogger(LocalFileUtil.class);
 
 
-    public static void download(String srcPath, HttpServletResponse response){
+    public static void downloadPath(String srcPath, HttpServletResponse response){
         OutputStream os = null;
         InputStream inputStream = null;
 

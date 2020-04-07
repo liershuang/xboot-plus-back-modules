@@ -22,9 +22,11 @@ public class NodeTemplate {
     private int nodeId;
     /** 节点名称 */
     private String nodeName;
+    /** 节点路径 */
+    private String nodePath;
     /** 模板内容 */
     private String content;
-
+    /** 节点业务id */
     private Integer businId;
 
     private List<NodeTemplate> childList = Collections.emptyList();

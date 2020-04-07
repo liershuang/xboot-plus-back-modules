@@ -23,6 +23,8 @@ public class ResultNode {
     private String content;
     /** 节点路径 */
     private String nodePath;
+    /** 节点解析后真实路径 */
+    private String nodeRealPath;
     /** 是否为文件，默认false */
     private boolean isFile = false;
 

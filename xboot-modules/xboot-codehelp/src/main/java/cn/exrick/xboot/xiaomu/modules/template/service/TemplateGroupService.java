@@ -21,5 +21,12 @@ public interface TemplateGroupService extends IService<TemplateGroup> {
      * @param groupId
      * @return
      */
-    public List<NodeTemplate> getTreeTemplatList(int groupId);
+    public List<NodeTemplate> getTreeTemplateList(int groupId);
+
+    /**
+     * 解析树形模板（无模板内容）
+     * @param groupId
+     * @return
+     */
+    public List<NodeTemplate> getTreeTemplateListWithoutContent(int groupId);
 }
